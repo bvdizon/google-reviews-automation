@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Group - Agent Reviews</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .wrapper {
+            max-width: 1366px;
+            width: 100%;
+            margin: auto;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="wrapper">
+        <section style="margin: 50px 0;">
+            <div class="columns">
+                <div class="column -width-1/2 -width-1/2@md -width-1/1@sm -width-1/1@xs">
+                    <h2 style="margin: 20px 0 10px;"><strong>The Group at RE/MAX First<br />(Calgary REALTOR&reg;
+                            Reviews)</strong>
+                    </h2>
+                    <div>
+                        <h3
+                            style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 10px;">
+                            4.9 <img style="padding: 0 10px;" src="/uploads/agent-1/star-full-icon.png" alt="" /> <img
+                                style="padding-right: 10px;" src="/uploads/agent-1/star-full-icon.png" alt="" /> <img
+                                style="padding-right: 10px;" src="/uploads/agent-1/star-full-icon.png" alt="" /> <img
+                                style="padding-right: 10px;" src="/uploads/agent-1/star-full-icon.png" alt="" /> <img
+                                style="padding-right: 10px;" src="/uploads/agent-1/star-full-icon.png" alt="" /></h3>
+                        <img src="https://3skyqcf3b4r1w1aig1x7yy4q-wpengine.netdna-ssl.com/wp-content/plugins/ninja-google-review/assets/frontend/img/Google_2015_logo.svg"
+                            alt="" width="80px" />
+                    </div>
+                </div>
+                <div class="column -width-1/2 -width-1/2@md -width-1/1@sm -width-1/1@xs" style="text-align: center;">
+                    <h4 style="margin-bottom: 10px;"><strong>We'd love to hear from you!</strong></h4>
+                    <p>Share your experience with the <br />The Group at RE/MAX First Team on Google</p>
+                    <a class="button button--strong button--pill -text-upper" href="http://bit.ly/the-group-at-remax"
+                        target="_blank">Add a Review</a>
+                </div>
+            </div>
+            <!-- reviews -->
+            <div id="reviews-list" class="columns"
+                style="box-shadow: 1px 1px 15px #f1f0ef; border-radius: 3px; padding: 10px;"></div>
+            <!-- End of Reviews -->
+            <div style="text-align: center; margin-top: 30px;"><a class="button button--strong button--pill -text-upper"
+                    href="https://www.google.com/search?q=the+group+at+remax+first&amp;rlz=1C1GCEA_enCA835CA835&amp;oq=the+group+at+remax+first+&amp;aqs=chrome..69i57j69i59j69i60l3.7366j0j4&amp;sourceid=chrome&amp;ie=UTF-8#lrd=0x537176b2fcd3357f:0xe4e4a768ee7a63d4,1,,,"
+                    target="_blank">Read all Reviews</a></div>
+        </section>
+    </main>
+    <!-- <script src="app.js"></script> -->
+
+    <script>
+        "use strict";
+
+        var url =
+            'https://spreadsheets.google.com/feeds/list/1ih7uMSaOMxyPtBFYPS5eOzs0duxuqar3dREVZ8paUf0/od6/public/values?alt=json';
+
+        var getReviews = async function getReviews() {
+            var resp = await fetch(url);
+            var data = await resp.json();
+            return data;
+        };
+
+        var processReviews = function processReviews(data) {
+            var reviews = data.sort(function (a, b) {
+                return b.gsx$id.$t - a.gsx$id.$t;
+            }).slice(0, 10);
+            reviews.forEach(function (review) {
+                var name = review.gsx$name.$t;
+                var namelink = review.gsx$namelink.$t;
+                var content = review.gsx$review.$t;
+                var reviewdate = new Date(review.gsx$reviewdate.$t);
+                reviewdate = reviewdate.toDateString();
+                var stars = review.gsx$stars.$t;
+                var starsReview = "";
+
+                for (var i = 0; i < stars; i++) {
+                    starsReview +=
+                        "<img src=\"/uploads/agent-1/star-full-icon.png\" alt=\"\" width=\"16\" height=\"16\" />";
+                }
+
+                var reviewHTML =
+                    "\n        <div class=\"column -width-1/2 -width-1/2@md -width-1/1@sm -width-1/1@xs\">\n            <div><a style=\"text-decoration: none;\" href=\""
+                    .concat(namelink, "\" target=\"_blank\">").concat(name,
+                        "</a></div>\n                <div>\n                    ").concat(starsReview,
+                        "\n                </div>\n            <div style=\"font-size: 12px; color: grey;\">"
+                        ).concat(reviewdate, "</div>\n            <div>").concat(content,
+                        "</div>\n        </div>\n        ");
+                document.getElementById('reviews-list').innerHTML += reviewHTML;
+            });
+        };
+
+        getReviews().then(function (data) {
+            return processReviews(data.feed.entry);
+        }).catch(function (err) {
+            return console.log(err);
+        });
+    </script>
+</body>
+
+</html>
